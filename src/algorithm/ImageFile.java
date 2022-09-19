@@ -34,7 +34,8 @@ public class ImageFile {
 	}
 	}
 	public void save() throws IOException {
-		ImageIO.write(processed, "BMP", new File("./test.bmp"));		
+		ImageIO.write(processed, "BMP", new File("./output.bmp"));		
+		ImageIO.write(ProcessImage.RGBtoGray(original), "JPG", new File("./output.jpg"));	
 	}
 //	BufferedImage precessedImage
 	public void ReadPPM(String filename) throws FileNotFoundException {
@@ -93,7 +94,14 @@ public class ImageFile {
 	    }
 	    return temp;
 	}
-
+	public double getHeight() {
+		return original.getHeight();
+		
+	}
+	public double getWidth() {
+		return original.getWidth();
+		
+	}
 
 	public void clear() {
 		 filepath="";

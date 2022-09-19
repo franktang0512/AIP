@@ -7,6 +7,6 @@ public class HW1 {
 		ProcessImage processimage = new ProcessImage(); 
 		ImageFile imagefile = new ImageFile();
 		GUIMaker gui = new GUIMaker(imagefile,processimage);		
-		gui.SelecFiletWindow();
+		gui.SelecFiletWindow("hw1");
 	}
 }

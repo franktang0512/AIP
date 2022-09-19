@@ -6,5 +6,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/Users/Frank.DESKTOP-11020BU/eclipse-workspace/AIP/Chart2D.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Frank.DESKTOP-11020BU/eclipse-workspace/AIP/jfreechart-1.5.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

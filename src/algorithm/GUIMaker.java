@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.ImageIcon;
@@ -15,7 +16,10 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+
 
 public class GUIMaker {
 	String filepath="";
@@ -25,16 +29,16 @@ public class GUIMaker {
 		imagefile = im;
 		prcessimage = pi;
 	}
-	public void SelecFiletWindow() {
+	public void SelecFiletWindow(String hw) {
 		
-		JFrame File_Chooser_Frame = new JFrame("File Chooser");
+		JFrame File_Chooser_Frame = new JFrame("AIP61047115S");
         File_Chooser_Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         JPanel File_Chooser_Panel = new JPanel();
         LayoutManager Layout_Manager = new FlowLayout();
         File_Chooser_Panel.setLayout(Layout_Manager);
 
-        JButton Choose_Button = new JButton("Choose File");
+        JButton Choose_Button = new JButton("Choose an Image File");
         final JLabel J_Label = new JLabel();
         Choose_Button.addActionListener(new ActionListener() {
             @Override
@@ -52,7 +56,16 @@ public class GUIMaker {
                        }catch (IOException e1) {
                     	   e1.printStackTrace();
                        }
-                       ShowDEMO();
+                       
+                       
+                       if(hw.equals("hw1")) {
+                    	   ShowDEMO();
+                       }
+                       if(hw.equals("hw2")) {
+                    	   HW2withHW1();
+                    	   
+                       }
+                       
                        
                    }
                    else{
@@ -71,7 +84,9 @@ public class GUIMaker {
 	}
 	
 	public void ShowDEMO() {
-		JFrame frame = new JFrame("JPanel Example");
+		JFrame frame = new JFrame("AIP61047115S");
+
+		JOptionPane.showMessageDialog(frame, "Image formate: ."+imagefile.getFileType(imagefile.filepath)+"\nImage size:"+imagefile.getWidth()+"x"+imagefile.getHeight());
 		JPanel panel = new JPanel(new GridLayout(2,3));
 //		BufferedImage image  = ImageIO.read(new File(filepath));
 
@@ -99,7 +114,7 @@ public class GUIMaker {
 	        public void actionPerformed(ActionEvent e) {
 	        	try {
 	        		imagefile.clear();
-	        		SelecFiletWindow();
+	        		SelecFiletWindow("hw1");
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -147,4 +162,125 @@ public class GUIMaker {
 	    
 	}
 
+	
+	public void HW2withHW1() {
+		JFrame frame = new JFrame("AIP61047115S");
+
+		JOptionPane.showMessageDialog(frame, "Image formate: ."+imagefile.getFileType(imagefile.filepath)+"\nImage size:"+imagefile.getWidth()+"x"+imagefile.getHeight());
+		JPanel panel = new JPanel(new GridLayout(2,3));
+//		BufferedImage image  = ImageIO.read(new File(filepath));
+
+	    JLabel label = new JLabel(new ImageIcon(imagefile.getBufferImage()));
+	    JLabel label1 = new JLabel();
+	    
+	    JLabel label2 = new JLabel(/*new ImageIcon(rotateCw(image))*/);
+	    panel.add(label);
+	    panel.add(label1);
+	    panel.add(label2);
+	    
+	    
+	    
+		Button load = new Button("load");
+		load.setPreferredSize(new Dimension(40, 40));
+		
+		JPanel panel_function = new JPanel(new GridLayout(2,1));
+		
+		
+		Button convert = new Button("convert");
+		convert.setPreferredSize(new Dimension(40, 40));
+		Button histogram = new Button("histogram");
+		convert.setPreferredSize(new Dimension(40, 40));		
+		
+		
+		panel_function.add(convert);
+		panel_function.add(histogram);
+		
+		
+		Button save = new Button("save");
+		save.setPreferredSize(new Dimension(40, 40));
+		
+	    panel.add(load);
+	    
+	    load.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	try {
+	        		imagefile.clear();
+	        		SelecFiletWindow("hw2");
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+	        	frame.dispose();	        	
+	        }
+	        
+	    });
+	    
+	    convert.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+	        	if(imagefile.getProcessedImage()==null) {
+	        		imagefile.setProcessedImage(prcessimage.Rotate(imagefile.getBufferImage()));
+	        		
+	        	}else {
+	        		imagefile.setProcessedImage(prcessimage.Rotate(imagefile.getProcessedImage()));
+	        	}
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoGray(imagefile.getBufferImage())));
+	        	label2.setIcon(new ImageIcon(imagefile.getProcessedImage()));
+	        	frame.repaint();	        	
+	        }
+	        
+	    });
+	    
+	    histogram.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	
+	        	makeBrightnessIntensityHistogram();
+	        }	        
+	    });
+	    save.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	        		
+	        	try {
+	        		imagefile.save();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}	        	
+	        }	        
+	    });
+	    
+	    panel.add(panel_function);
+	    panel.add(save);
+	    
+	    frame.getContentPane().add(panel); 
+	    frame.setPreferredSize(new Dimension(1000, 800));
+	    frame.pack();
+	    frame.setVisible(true);	    
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+	}
+	public void makeBrightnessIntensityHistogram() {
+		
+		Histogram h = new Histogram();
+		imagefile.getBufferImage();
+		
+        JFrame f = new JFrame("Histogram");
+
+        JPanel histogram_panel = new JPanel(new GridLayout(1, 2));
+        JPanel control_panel = new JPanel(new GridLayout(0, 1));
+        histogram_panel.add(h.createChart(imagefile.getBufferImage(),255));
+        histogram_panel.add(h.createChartPanel(imagefile.getBufferImage()));
+        control_panel.add(h.createControlPanel());
+        
+        f.add(histogram_panel);
+        f.add(control_panel, BorderLayout.SOUTH);
+        f.setPreferredSize(new Dimension(1300, 400));
+        f.pack();
+        f.setLocationRelativeTo(null);
+        f.setVisible(true);
+        		
+	}
+ 
+	
 }
