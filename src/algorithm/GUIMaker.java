@@ -183,16 +183,32 @@ public class GUIMaker {
 		Button load = new Button("load");
 		load.setPreferredSize(new Dimension(40, 40));
 		
-		JPanel panel_function = new JPanel(new GridLayout(2,1));
+		JPanel panel_function = new JPanel(new GridLayout(3,1));
 		
 		
 		Button convert = new Button("convert");
 		convert.setPreferredSize(new Dimension(40, 40));
+
+		JPanel panel_color = new JPanel(new GridLayout(1,4));
+		Button gray = new Button("turn gray");
+		
+		Button red = new Button("turn red");
+
+		Button green = new Button("turn green");
+
+		Button blue = new Button("turn blue");
+		panel_color.add(gray);
+		panel_color.add(red);
+		panel_color.add(green);
+		panel_color.add(blue);
+		
 		Button histogram = new Button("histogram");
 		convert.setPreferredSize(new Dimension(40, 40));		
 		
 		
 		panel_function.add(convert);
+		
+		panel_function.add(panel_color);
 		panel_function.add(histogram);
 		
 		
@@ -225,10 +241,53 @@ public class GUIMaker {
 	        	}else {
 	        		imagefile.setProcessedImage(prcessimage.Rotate(imagefile.getProcessedImage()));
 	        	}
-	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoGray(imagefile.getBufferImage())));
+
 	        	label2.setIcon(new ImageIcon(imagefile.getProcessedImage()));
 	        	frame.repaint();	        	
 	        }
+	        
+	        
+	        
+	        
+	    });
+	    gray.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoGray(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    red.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoR(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    green.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoG(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    blue.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoB(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
 	        
 	    });
 	    
