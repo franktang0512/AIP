@@ -18,6 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 
 
@@ -63,6 +64,10 @@ public class GUIMaker {
                        }
                        if(hw.equals("hw2")) {
                     	   HW2withHW1();
+                    	   
+                       }
+                       if(hw.equals("hw3")) {
+                    	   HW3withHW1();
                     	   
                        }
                        
@@ -340,6 +345,248 @@ public class GUIMaker {
         f.setVisible(true);
         		
 	}
- 
+	public void HW3withHW1() {
+		JFrame frame = new JFrame("AIP61047115S");
+
+		JOptionPane.showMessageDialog(frame, "Image formate: ."+imagefile.getFileType(imagefile.filepath)+"\nImage size:"+imagefile.getWidth()+"x"+imagefile.getHeight());
+		JPanel panel = new JPanel(new GridLayout(2,3));
+//		BufferedImage image  = ImageIO.read(new File(filepath));
+
+	    JLabel label = new JLabel(new ImageIcon(imagefile.getBufferImage()));
+	    JLabel label1 = new JLabel();
+	    
+	    JLabel label2 = new JLabel(/*new ImageIcon(rotateCw(image))*/);
+	    panel.add(label);
+	    panel.add(label1);
+	    panel.add(label2);
+	    
+	    
+	    
+		Button load = new Button("load");
+		load.setPreferredSize(new Dimension(40, 40));
+		
+		JPanel panel_function = new JPanel(new GridLayout(4,1));
+		
+		
+		Button convert = new Button("convert");
+		convert.setPreferredSize(new Dimension(40, 40));
+
+		JPanel panel_color = new JPanel(new GridLayout(1,4));
+		Button gray = new Button("turn gray");
+		
+		Button red = new Button("turn red");
+
+		Button green = new Button("turn green");
+
+		Button blue = new Button("turn blue");
+		panel_color.add(gray);
+		panel_color.add(red);
+		panel_color.add(green);
+		panel_color.add(blue);
+		
+		Button histogram = new Button("histogram");
+		Button GaussianNoise = new Button("Gaussian Noise");
+		
+		
+		panel_function.add(convert);
+		
+		panel_function.add(panel_color);
+		panel_function.add(histogram);
+		panel_function.add(GaussianNoise);
+		
+		
+		Button save = new Button("save");
+		save.setPreferredSize(new Dimension(40, 40));
+		
+	    panel.add(load);
+	    
+	    load.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	try {
+	        		imagefile.clear();
+	        		SelecFiletWindow("hw3");
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+	        	frame.dispose();	        	
+	        }
+	        
+	    });
+	    
+	    convert.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+	        	if(imagefile.getProcessedImage()==null) {
+	        		imagefile.setProcessedImage(prcessimage.Rotate(imagefile.getBufferImage()));
+	        		
+	        	}else {
+	        		imagefile.setProcessedImage(prcessimage.Rotate(imagefile.getProcessedImage()));
+	        	}
+
+	        	label2.setIcon(new ImageIcon(imagefile.getProcessedImage()));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	        
+	        
+	    });
+	    gray.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoGray(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    red.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoR(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    green.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoG(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    blue.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoB(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    
+	    histogram.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	
+	        	makeBrightnessIntensityHistogram();
+	        }	        
+	    });
+	    
+	    GaussianNoise.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	
+//	        	makeGaussianNoiseHistogram();
+	        	makeSDSettingGUI();
+	        }	        
+	    });
+	    
+	    
+	    save.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	        		
+	        	try {
+	        		imagefile.save();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}	        	
+	        }	        
+	    });
+	    
+	    panel.add(panel_function);
+	    panel.add(save);
+	    
+	    frame.getContentPane().add(panel); 
+	    frame.setPreferredSize(new Dimension(1000, 800));
+	    frame.pack();
+	    frame.setVisible(true);	    
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+	}
+	public void makeSDSettingGUI() {
+		JFrame frame = new JFrame("Set the Standard Deviation σ");
+//	    frame.getContentPane().add(panel); 
+		
+		JPanel panel = new JPanel(new FlowLayout());
+		double sd=0;
+		
+		JLabel settext = new JLabel("Please set σ:"); 
+		
+		JTextField sdtext = new JTextField(15);
+		Button check = new Button("set");
+		
+		check.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	        	
+	        	
+	        	double d = Double.parseDouble(sdtext.getText().toString());
+	        	makeGaussianNoiseHistogram(d);
+	        	frame.dispose();
+	        	
+	        	
+//	        	try {
+//	        		
+//	        		
+//		        	double d = Double.parseDouble(sdtext.getText().toString());
+//		        	makeGaussianNoiseHistogram(d);
+//		        	frame.dispose();
+//				} catch (Exception e1) {
+//					// TODO Auto-generated catch block
+//					JOptionPane.showMessageDialog(frame, "Please type in numeric!!!");
+//					JOptionPane.showMessageDialog(frame, e1.toString());
+//				}	        	
+	        }	        
+	    });
+		panel.add(settext);
+		panel.add(sdtext);
+		panel.add(check);
+		frame.add(panel);
+	    frame.setPreferredSize(new Dimension(350, 100));
+	    frame.pack();
+	    frame.setVisible(true);	  
+	    frame.setLocationRelativeTo(null);
+	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+	}
+	
+	public void makeGaussianNoiseHistogram(double standard){
+		JFrame frame = new JFrame("Gaussian Noise");
+//	    frame.getContentPane().add(panel); 
+		JPanel gn = new JPanel(new GridLayout(2, 3));
+		
+		
+	    JLabel origin_gray = new JLabel(new ImageIcon(prcessimage.RGBtoGray(imagefile.getBufferImage())));
+	    JLabel gnoise = new JLabel(new ImageIcon(prcessimage.AddNoise(imagefile.getBufferImage(),standard)[1]));
+	    
+	    JLabel ori_add_noise = new JLabel(new ImageIcon(prcessimage.AddNoise(imagefile.getBufferImage(),standard)[0]));
+	    gn.add(origin_gray);
+	    gn.add(gnoise);
+	    gn.add(ori_add_noise);
+	    
+	    
+	    
+	    
+	    Histogram h = new Histogram();
+	    gn.add(h.createChart(imagefile.getBufferImage(),100));
+	    gn.add(h.createChart(prcessimage.AddNoise(imagefile.getBufferImage(),standard)[1],100));	    
+	    gn.add(h.createChart(prcessimage.AddNoise(imagefile.getBufferImage(),standard)[0],100));
+		
+		frame.add(gn);
+	    frame.setPreferredSize(new Dimension(800, 600));
+	    frame.pack();
+	    frame.setVisible(true);	    
+	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+	}
+	
 	
 }

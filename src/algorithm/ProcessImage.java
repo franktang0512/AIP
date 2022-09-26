@@ -1,7 +1,9 @@
 package algorithm;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 public class ProcessImage {
 
@@ -137,4 +139,120 @@ public class ProcessImage {
 		
 		
 	}
+
+//	public static BufferedImage MakeGussianWhiteNoise(double variance, int length, int width ){
+//		
+//		return null;
+//	}
+	
+	
+	public BufferedImage FixImageSize(BufferedImage ori) {		
+		
+		int exportWidth = (ori.getWidth()%2==1?ori.getWidth():ori.getWidth()-1) ;
+		int exportHeight = (ori.getHeight()%2==1?ori.getHeight():ori.getHeight()-1) ;
+
+		BufferedImage fixed = new BufferedImage(exportWidth, exportHeight, ori.getType());
+		Graphics2D g2d = fixed.createGraphics();
+		g2d.drawImage(ori,0,0,exportWidth,exportHeight,null);
+		g2d.dispose();
+		
+		return fixed ;
+	}
+	
+	public BufferedImage[] AddNoise(BufferedImage img,double standard) {
+		int grayscale =256;
+		BufferedImage noised = RGBtoGray(FixImageSize(img));
+		BufferedImage pure_noise =new BufferedImage(noised.getWidth(), noised.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
+		for(int i =0;i<img.getHeight();i++) {
+			for(int j =0;j+1<img.getWidth()-2;j+=2) {
+//				if(j>img.getWidth())
+				double r1,r2,z1,z2;
+//				r1 = 
+						
+				Random random = new Random();
+				
+				r1 =random.nextDouble();
+				r2 =random.nextDouble();
+				
+				z1 = -standard* Math.cos(2*Math.PI*r2)*Math.sqrt((-2) *Math.log(r1));
+				z2 = -standard* Math.sin(2*Math.PI*r2)*Math.sqrt((-2) *Math.log(r2));
+
+				double gray1;//= noised.getRGB(j, i);
+				
+				
+                int color = noised.getRGB(j, i);
+                int r = (color >> 16) & 0xff ;
+                int g = (color >> 8) & 0xff ;
+                int b = color & 0xff ;
+                gray1 = ( int ) (0.3 * r + 0.59 * g + 0.11 * b);
+				
+				
+				
+				
+				double gray2;//= noised.getRGB(j+1, i);
+				
+	             color = noised.getRGB(j+1, i);
+	             r = (color >> 16) & 0xff ;
+	             g = (color >> 8) & 0xff ;
+	             b = color & 0xff ;
+				
+	             gray2 = ( int ) (0.3 * r + 0.59 * g + 0.11 * b);
+				
+				
+				int pix1 = (int)(gray1+z1);
+				int pix2 = (int)(gray2+z2);
+				
+				
+				
+				if(pix1<0) {
+					pix1=0;					
+				}else if(pix1>grayscale -1) {
+					pix1=grayscale -1;
+				}
+				
+				
+				if(pix2<0) {
+					pix2=0;					
+				}else if(pix2>grayscale -1) {
+					pix2=grayscale -1;
+				}
+				
+				
+		        Color c = new Color(pix1, pix1, pix1);
+		        pix1 = c.getRGB();				
+				noised.setRGB(j, i,pix1);
+				
+				c = new Color(pix2, pix2, pix2);
+		        pix2 = c.getRGB();					
+		        noised.setRGB(j+1, i,pix2);
+		        
+		        
+		        
+		        pure_noise.setRGB(j,i,(int)z1);
+		        pure_noise.setRGB(j+1,i,(int)z2);	
+		        System.out.println(""+gray1+","+z1);
+		        
+		   
+
+	
+		        
+		        
+		        
+		        
+				
+			}
+			
+		}
+		
+		BufferedImage[] result = new BufferedImage[] {noised,pure_noise};
+		
+		
+		return result;
+	}
+	
+	
+	
+	
+	
+
 }
