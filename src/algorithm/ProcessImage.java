@@ -158,50 +158,107 @@ public class ProcessImage {
 		
 		return fixed ;
 	}
-	public BufferedImage getPureNoise(BufferedImage img,BufferedImage noised_imag) {
-		
-		BufferedImage pure_noise =new BufferedImage(noised_imag.getWidth(), noised_imag.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
-		for(int i =0;i<pure_noise.getWidth();i++) {
-			for(int j =0;j<pure_noise.getHeight();j++) {
-				
-				
-				
-				
-				
-				
-                int color = noised_imag.getRGB(i, j);
-                int color2 =img.getRGB(i, j);
-                int gray1,gray2;
-                int r = (color >> 16) & 0xff ;
-                int g = (color >> 8) & 0xff ;
-                int b = color & 0xff ;
-                gray1 = ( int ) (0.3 * r + 0.59 * g + 0.11 * b);
-		        Color c = new Color(gray1, gray1, gray1);
-		        gray1 = c.getRGB();		
-		        
-		        r = (color2 >> 16) & 0xff ;
-                g = (color2 >> 8) & 0xff ;
-                b = color2 & 0xff ;
-                gray2 = ( int ) (0.3 * r + 0.59 * g + 0.11 * b);
-		        c = new Color(gray2, gray2, gray2);
-		        gray2 = c.getRGB();	
-		        
-		        
-		        
+//	public BufferedImage getPureNoise(BufferedImage img,BufferedImage noised_imag) {
+//		
+//		BufferedImage pure_noise =new BufferedImage(noised_imag.getWidth(), noised_imag.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
+//		for(int i =0;i<pure_noise.getWidth();i++) {
+//			for(int j =0;j<pure_noise.getHeight();j++) {
+//				
+//				
+//				
+//				
+//				
+//				
+//                int color = noised_imag.getRGB(i, j);
+//                int color2 =img.getRGB(i, j);
+//                int gray1,gray2;
+//                int r = (color >> 16) & 0xff ;
+//                int g = (color >> 8) & 0xff ;
+//                int b = color & 0xff ;
+//                gray1 = ( int ) (0.3 * r + 0.59 * g + 0.11 * b);
+//		        Color c = new Color(gray1, gray1, gray1);
+//		        gray1 = c.getRGB();		
+//		        
+//		        r = (color2 >> 16) & 0xff ;
+//                g = (color2 >> 8) & 0xff ;
+//                b = color2 & 0xff ;
+//                gray2 = ( int ) (0.3 * r + 0.59 * g + 0.11 * b);
+//		        c = new Color(gray2, gray2, gray2);
+//		        gray2 = c.getRGB();	
+//		        
+//		        
+//		        
+//
+//                
+//				pure_noise.setRGB(i,j,(gray1-gray2));
+//				
+//			}
+//			
+//		} 
+//			
+//		
+//		
+//		return pure_noise;
+//	}
+	public static int[] range(int n, double prob) {
 
-                
-				pure_noise.setRGB(i,j,(gray1-gray2));
-				
-			}
-			
-		} 
-			
 		
+//		prob = 1/prob;
+//		double res = ((100 * prob)/10);
+		double res = 200/prob;		
+		int[]array = new int[(int)res];
+		array[0]= 1;
+		array[1]=255;
 		
-		return pure_noise;
+		for (int i = 2 ; i <= res - 2; i++)
+		{
+			array[i] = n;
+		}
+	    int rnd = new Random().nextInt(array.length);
+	    int result[] = new int[] {array[rnd],(n==array[rnd]?0:1)};
+	    return result;
 	}
 	
-	public BufferedImage[] AddNoise(BufferedImage img,double standard) {
+	
+	public BufferedImage[] AddPSNoise(BufferedImage img,double rate) {
+		int grayscale =256;
+		BufferedImage noised = RGBtoGray(FixImageSize(img));
+		BufferedImage pure_noise =new BufferedImage(noised.getWidth(), noised.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
+		Random random = new Random();
+		
+		double salt = 0.05, pepper = 0.05; 
+		for(int i=0; i<pure_noise.getWidth(); i++){
+	         
+            for(int j=0; j<pure_noise.getHeight(); j++){
+	               Color c = new Color(128,128,128);		               
+	               pure_noise.setRGB(i,j,c.getRGB());
+            }
+        }
+		
+		for(int i=0; i<noised.getWidth(); i++){
+	         
+            for(int j=0; j<noised.getHeight(); j++){
+            
+               Color c = new Color(noised.getRGB(i, j));
+               int red = (int)(c.getRed() * 0.299);
+               int green = (int)(c.getGreen() * 0.587);
+               int blue = (int)(c.getBlue() *0.114);
+               int []rgb = range(red+green+blue,rate);
+               Color newColor = new Color(rgb[0],rgb[0],rgb[0]);
+               noised.setRGB(i,j,newColor.getRGB());
+               if(rgb[1]==1) {
+            	   
+            	   pure_noise.setRGB(i,j,newColor.getRGB());
+               }
+//               
+               
+            }
+         }		
+		BufferedImage[] result = new BufferedImage[] {noised,pure_noise};		
+		return result;
+	}
+	
+	public BufferedImage[] AddGuNoise(BufferedImage img,double standard) {
 		int grayscale =256;
 		BufferedImage noised = RGBtoGray(FixImageSize(img));
 		BufferedImage pure_noise =new BufferedImage(noised.getWidth(), noised.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
@@ -227,10 +284,7 @@ public class ProcessImage {
                 int r = (color >> 16) & 0xff ;
                 int g = (color >> 8) & 0xff ;
                 int b = color & 0xff ;
-                gray1 = ( int ) (0.3 * r + 0.59 * g + 0.11 * b);
-				
-				
-				
+                gray1 = ( int ) (0.3 * r + 0.59 * g + 0.11 * b);			
 				
 				double gray2;//= noised.getRGB(j+1, i);
 				
@@ -267,9 +321,7 @@ public class ProcessImage {
 				
 				c = new Color(pix2, pix2, pix2);
 		        pix2 = c.getRGB();					
-		        noised.setRGB(j+1, i,pix2);
-		        
-		        
+		        noised.setRGB(j+1, i,pix2);	        
 		        
 		        
 		        z1= (z1+128<0?0:(z1+128>255?255:z1+128));
@@ -277,31 +329,15 @@ public class ProcessImage {
 		        c = new Color(z11, z11, z11);
 		        pure_noise.setRGB(j,i,c.getRGB());
 		        
+		        
 		        z2= (z2+128<0?0:(z2+128>255?255:z2+128));
 		        int z22 = (int)z2;
 		        c = new Color(z22, z22, z22);	        
 		        
-		        pure_noise.setRGB(j+1,i,c.getRGB());	
-		       
-//		        pure_noise.setRGB(j,i,((int)z1+128>255?255:(((int)z1+128<0)?0:(int)z1+128)));
-//		        pure_noise.setRGB(j+1,i,((int)z2+128>255?255:(((int)z2+128<0)?0:(int)z2+128)));	
-//		        System.out.println(z1+" , "+z2);
-		        
-		   
-
-	
-		        
-		        
-		        
-		        
-				
-			}
-			
-		}
-		
-		BufferedImage[] result = new BufferedImage[] {noised,pure_noise};
-		
-		
+		        pure_noise.setRGB(j+1,i,c.getRGB());
+			}			
+		}		
+		BufferedImage[] result = new BufferedImage[] {noised,pure_noise};		
 		return result;
 	}
 	

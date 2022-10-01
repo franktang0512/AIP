@@ -384,15 +384,19 @@ public class GUIMaker {
 		panel_color.add(green);
 		panel_color.add(blue);
 		
-		Button histogram = new Button("histogram");
-		Button GaussianNoise = new Button("Gaussian Noise");
-		
+		Button histogram = new Button("histogram");	
 		
 		panel_function.add(convert);
 		
 		panel_function.add(panel_color);
 		panel_function.add(histogram);
-		panel_function.add(GaussianNoise);
+		
+		JPanel panel_noise = new JPanel(new GridLayout(1,2));
+		Button GaussianNoise = new Button("Gaussian Noise");
+		Button PepperSaltNoise = new Button("Pepper-Salt Noise");
+		panel_noise.add(GaussianNoise);
+		panel_noise.add(PepperSaltNoise);
+		panel_function.add(panel_noise);
 		
 		
 		Button save = new Button("save");
@@ -485,7 +489,14 @@ public class GUIMaker {
 	        @Override
 	        public void actionPerformed(ActionEvent e) {	
 //	        	makeGaussianNoiseHistogram();
-	        	makeSDSettingGUI();
+	        	makeNoiseSettingGUI("Gaussian");
+	        }	        
+	    });
+	    PepperSaltNoise.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	
+//	        	makeGaussianNoiseHistogram();
+	        	makeNoiseSettingGUI("Pepper");
 	        }	        
 	    });
 	    
@@ -512,14 +523,25 @@ public class GUIMaker {
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 	}
-	public void makeSDSettingGUI() {
-		JFrame frame = new JFrame("Set the Standard Deviation σ");
+	public void makeNoiseSettingGUI(String s) {
+		String sds = "Set the Standard Deviation σ";
+		String rates = "Set the rate r";
+		String title ="";
+		String toldsettext="";
+		if(s.equals("Gaussian")) {
+			title = sds;
+			toldsettext ="σ";
+		}else if(s.equals("Pepper")) {
+			title = rates;
+			toldsettext ="r(%)";
+		}
+		JFrame frame = new JFrame(title);
 //	    frame.getContentPane().add(panel); 
 		
 		JPanel panel = new JPanel(new FlowLayout());
 		double sd=0;
 		
-		JLabel settext = new JLabel("Please set σ:"); 
+		JLabel settext = new JLabel("Please set "+toldsettext+":"); 
 		
 		JTextField sdtext = new JTextField(15);
 		Button check = new Button("set");
@@ -527,23 +549,24 @@ public class GUIMaker {
 		check.addActionListener(new ActionListener(){
 	        @Override
 	        public void actionPerformed(ActionEvent e) {	        	
-	        	
-	        	double d = Double.parseDouble(sdtext.getText().toString());
-	        	makeGaussianNoiseHistogram(d);
-	        	frame.dispose();
-	        	
-	        	
-//	        	try {
-//	        		
-//	        		
-//		        	double d = Double.parseDouble(sdtext.getText().toString());
-//		        	makeGaussianNoiseHistogram(d);
-//		        	frame.dispose();
-//				} catch (Exception e1) {
-//					// TODO Auto-generated catch block
-//					JOptionPane.showMessageDialog(frame, "Please type in numeric!!!");
-//					JOptionPane.showMessageDialog(frame, e1.toString());
-//				}	        	
+	        	try {
+	        		double d = Double.parseDouble(sdtext.getText().toString());		        	
+		        	
+		    		if(s.equals("Gaussian")) {
+		    			
+		    			makeGaussianNoiseHistogram(d);
+		    		}else if(s.equals("Pepper")) {
+		    			if(d>=0.05&&d<=100) {
+		    				makePepperSaultNoiseHistogram(d);
+		    			}else {
+		    				JOptionPane.showMessageDialog(frame, "Please set r between 0.05 and 100.\n Or you have to wait for it so long");
+		    			}	    			
+		    		}
+		    		frame.dispose();
+	        	}catch(Exception eee) {
+	        		JOptionPane.showMessageDialog(frame, "R u idiot?\n type in numeric instead thanks");
+	        	}
+	        	        	
 	        }	        
 	    });
 		panel.add(settext);
@@ -564,10 +587,10 @@ public class GUIMaker {
 		JPanel gn = new JPanel(new GridLayout(2, 3));
 		
 		BufferedImage a = prcessimage.RGBtoGray(imagefile.getBufferImage());
-		BufferedImage [] b = prcessimage.AddNoise(imagefile.getBufferImage(),standard);
+		BufferedImage [] b = prcessimage.AddGuNoise(imagefile.getBufferImage(),standard);
 		BufferedImage noed = b[0];
 		BufferedImage pure_no = b[1];
-		BufferedImage pure_no_r = prcessimage.getPureNoise(a, noed);
+//		BufferedImage pure_no_r = prcessimage.getPureNoise(a, noed);
 		
 		
 		
@@ -599,5 +622,46 @@ public class GUIMaker {
 		
 	}
 	
+
+	public void makePepperSaultNoiseHistogram(double rate){
+		JFrame frame = new JFrame("Pepper-Salt Noise");
+//	    frame.getContentPane().add(panel); 
+		JPanel gn = new JPanel(new GridLayout(2, 3));
+		
+		BufferedImage a = prcessimage.RGBtoGray(imagefile.getBufferImage());
+		BufferedImage [] b = prcessimage.AddPSNoise(imagefile.getBufferImage(),rate);
+		BufferedImage noed = b[0];
+		BufferedImage pure_no = b[1];
+//		BufferedImage pure_no_r = prcessimage.getPureNoise(a, noed);
+		
+		
+		
+	    JLabel origin_gray = new JLabel(new ImageIcon(a));
+//	    JLabel gnoise = new JLabel(new ImageIcon(prcessimage.AddNoise(imagefile.getBufferImage(),standard)[1]));
+	    
+	    JLabel gnoise = new JLabel(new ImageIcon(pure_no));
+	    JLabel ori_add_noise = new JLabel(new ImageIcon(noed));
+	    
+	    
+	    
+	    gn.add(origin_gray);
+	    gn.add(gnoise);
+	    gn.add(ori_add_noise);
+	    
+	    
+	    
+	    
+	    Histogram h = new Histogram();
+	    gn.add(h.createChart(a,100));
+	    gn.add(h.createChart(pure_no,100));	    
+	    gn.add(h.createChart(noed,100));
+		
+		frame.add(gn);
+	    frame.setPreferredSize(new Dimension(800, 600));
+	    frame.pack();
+	    frame.setVisible(true);	    
+	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+	}
 	
 }
