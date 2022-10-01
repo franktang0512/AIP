@@ -8,5 +8,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/Users/Frank.DESKTOP-11020BU/eclipse-workspace/AIP/Chart2D.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Frank.DESKTOP-11020BU/eclipse-workspace/AIP/jfreechart-1.5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Frank.DESKTOP-11020BU/eclipse-workspace/AIP/imageio-pnm-3.8.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Frank.DESKTOP-11020BU/eclipse-workspace/AIP/common-io-3.8.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Frank.DESKTOP-11020BU/eclipse-workspace/AIP/common-lang-3.8.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Frank.DESKTOP-11020BU/eclipse-workspace/AIP/imageio-core-3.8.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

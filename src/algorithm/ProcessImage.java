@@ -158,15 +158,58 @@ public class ProcessImage {
 		
 		return fixed ;
 	}
+	public BufferedImage getPureNoise(BufferedImage img,BufferedImage noised_imag) {
+		
+		BufferedImage pure_noise =new BufferedImage(noised_imag.getWidth(), noised_imag.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
+		for(int i =0;i<pure_noise.getWidth();i++) {
+			for(int j =0;j<pure_noise.getHeight();j++) {
+				
+				
+				
+				
+				
+				
+                int color = noised_imag.getRGB(i, j);
+                int color2 =img.getRGB(i, j);
+                int gray1,gray2;
+                int r = (color >> 16) & 0xff ;
+                int g = (color >> 8) & 0xff ;
+                int b = color & 0xff ;
+                gray1 = ( int ) (0.3 * r + 0.59 * g + 0.11 * b);
+		        Color c = new Color(gray1, gray1, gray1);
+		        gray1 = c.getRGB();		
+		        
+		        r = (color2 >> 16) & 0xff ;
+                g = (color2 >> 8) & 0xff ;
+                b = color2 & 0xff ;
+                gray2 = ( int ) (0.3 * r + 0.59 * g + 0.11 * b);
+		        c = new Color(gray2, gray2, gray2);
+		        gray2 = c.getRGB();	
+		        
+		        
+		        
+
+                
+				pure_noise.setRGB(i,j,(gray1-gray2));
+				
+			}
+			
+		} 
+			
+		
+		
+		return pure_noise;
+	}
 	
 	public BufferedImage[] AddNoise(BufferedImage img,double standard) {
 		int grayscale =256;
 		BufferedImage noised = RGBtoGray(FixImageSize(img));
 		BufferedImage pure_noise =new BufferedImage(noised.getWidth(), noised.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
-		for(int i =0;i<img.getHeight();i++) {
+		for(int i =0;i<img.getHeight()-1;i++) {
 			for(int j =0;j+1<img.getWidth()-2;j+=2) {
 //				if(j>img.getWidth())
-				double r1,r2,z1,z2;
+				double  r1,r2;
+				double z1,z2;
 //				r1 = 
 						
 				Random random = new Random();
@@ -174,8 +217,8 @@ public class ProcessImage {
 				r1 =random.nextDouble();
 				r2 =random.nextDouble();
 				
-				z1 = -standard* Math.cos(2*Math.PI*r2)*Math.sqrt((-2) *Math.log(r1));
-				z2 = -standard* Math.sin(2*Math.PI*r2)*Math.sqrt((-2) *Math.log(r2));
+				z1 = (standard* Math.cos(2*Math.PI*r2)*Math.sqrt((-2) *Math.log(r1)));
+				z2 = (standard* Math.sin(2*Math.PI*r2)*Math.sqrt((-2) *Math.log(r1)));
 
 				double gray1;//= noised.getRGB(j, i);
 				
@@ -228,9 +271,21 @@ public class ProcessImage {
 		        
 		        
 		        
-		        pure_noise.setRGB(j,i,(int)z1);
-		        pure_noise.setRGB(j+1,i,(int)z2);	
-		        System.out.println(""+gray1+","+z1);
+		        
+		        z1= (z1+128<0?0:(z1+128>255?255:z1+128));
+		        int z11 = (int)z1;
+		        c = new Color(z11, z11, z11);
+		        pure_noise.setRGB(j,i,c.getRGB());
+		        
+		        z2= (z2+128<0?0:(z2+128>255?255:z2+128));
+		        int z22 = (int)z2;
+		        c = new Color(z22, z22, z22);	        
+		        
+		        pure_noise.setRGB(j+1,i,c.getRGB());	
+		       
+//		        pure_noise.setRGB(j,i,((int)z1+128>255?255:(((int)z1+128<0)?0:(int)z1+128)));
+//		        pure_noise.setRGB(j+1,i,((int)z2+128>255?255:(((int)z2+128<0)?0:(int)z2+128)));	
+//		        System.out.println(z1+" , "+z2);
 		        
 		   
 

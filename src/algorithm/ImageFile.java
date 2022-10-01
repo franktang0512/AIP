@@ -1,15 +1,14 @@
 package algorithm;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Random;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
+
 
 public class ImageFile {
 	String filepath;
@@ -18,7 +17,7 @@ public class ImageFile {
 	public ImageFile() {}
 	
 
-	public void read(String path) throws IOException {
+	public void read(String path) throws Exception {
 		filepath = path;
 		switch(getFileType(filepath)) {
 		case "jpg":
@@ -29,7 +28,9 @@ public class ImageFile {
 			break;
 		case "ppm":
 		case "PPM":
-			ReadPPM(filepath);
+			original = ImageIO.read(new File(filepath));
+//			original = readpppm(filepath);
+//			ReadPPM(filepath);
 			break;
 		default:
 	
@@ -41,6 +42,10 @@ public class ImageFile {
 	}
 //	BufferedImage precessedImage
 	public void ReadPPM(String filename) throws FileNotFoundException {
+		
+		
+//		BufferedImage a = PNMImageReade
+		
 		Scanner sc = new Scanner(new File(filename));
         String magic = sc.next();
         int width = sc.nextInt();
@@ -110,5 +115,8 @@ public class ImageFile {
 		 original=null;	
 		 processed=null;
 	}
+	
+	
+	
 	
 }

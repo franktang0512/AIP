@@ -54,7 +54,7 @@ public class GUIMaker {
                        File_Chooser_Frame.dispose();
                        try {
                     	   imagefile.read(filepath);
-                       }catch (IOException e1) {
+                       }catch (Exception e1) {
                     	   e1.printStackTrace();
                        }
                        
@@ -563,11 +563,22 @@ public class GUIMaker {
 //	    frame.getContentPane().add(panel); 
 		JPanel gn = new JPanel(new GridLayout(2, 3));
 		
+		BufferedImage a = prcessimage.RGBtoGray(imagefile.getBufferImage());
+		BufferedImage [] b = prcessimage.AddNoise(imagefile.getBufferImage(),standard);
+		BufferedImage noed = b[0];
+		BufferedImage pure_no = b[1];
+		BufferedImage pure_no_r = prcessimage.getPureNoise(a, noed);
 		
-	    JLabel origin_gray = new JLabel(new ImageIcon(prcessimage.RGBtoGray(imagefile.getBufferImage())));
-	    JLabel gnoise = new JLabel(new ImageIcon(prcessimage.AddNoise(imagefile.getBufferImage(),standard)[1]));
+		
+		
+	    JLabel origin_gray = new JLabel(new ImageIcon(a));
+//	    JLabel gnoise = new JLabel(new ImageIcon(prcessimage.AddNoise(imagefile.getBufferImage(),standard)[1]));
 	    
-	    JLabel ori_add_noise = new JLabel(new ImageIcon(prcessimage.AddNoise(imagefile.getBufferImage(),standard)[0]));
+	    JLabel gnoise = new JLabel(new ImageIcon(pure_no));
+	    JLabel ori_add_noise = new JLabel(new ImageIcon(noed));
+	    
+	    
+	    
 	    gn.add(origin_gray);
 	    gn.add(gnoise);
 	    gn.add(ori_add_noise);
@@ -576,9 +587,9 @@ public class GUIMaker {
 	    
 	    
 	    Histogram h = new Histogram();
-	    gn.add(h.createChart(imagefile.getBufferImage(),100));
-	    gn.add(h.createChart(prcessimage.AddNoise(imagefile.getBufferImage(),standard)[1],100));	    
-	    gn.add(h.createChart(prcessimage.AddNoise(imagefile.getBufferImage(),standard)[0],100));
+	    gn.add(h.createChart(a,100));
+	    gn.add(h.createChart(pure_no,100));	    
+	    gn.add(h.createChart(noed,100));
 		
 		frame.add(gn);
 	    frame.setPreferredSize(new Dimension(800, 600));
