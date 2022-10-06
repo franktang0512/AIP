@@ -13,7 +13,9 @@ import javax.imageio.ImageIO;
 public class ImageFile {
 	String filepath;
 	BufferedImage original;	
-	BufferedImage processed;	
+	BufferedImage processed;
+	public BufferedImage smoothed;
+	public BufferedImage edged;
 	public ImageFile() {}
 	
 
@@ -112,11 +114,23 @@ public class ImageFile {
 
 	public void clear() {
 		 filepath="";
+		 smoothed = null;
 		 original=null;	
 		 processed=null;
+		 edged = null;
 	}
 	
-	
-	
+	public BufferedImage getSmooth() {
+		return smoothed;
+	}
+	public void setSmooth(BufferedImage img) {
+		smoothed = img;
+	}
+	public BufferedImage getEdge() {
+		return edged;
+	}
+	public void setEdge(BufferedImage img) {
+		edged = img;
+	}
 	
 }

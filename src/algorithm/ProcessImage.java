@@ -3,12 +3,44 @@ package algorithm;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
+import java.awt.image.WritableRaster;
 import java.util.Random;
 
 public class ProcessImage {
-
+	double core[][];
+	float h_core[],v_core[];
 	public ProcessImage() {
-		// TODO Auto-generated constructor stub
+		
+		//default core
+		core = new double[5][5];
+		//fill with 1, not gon /(core_size*core_size) because it gon tend to turn 0. thus, we will make it average later
+		for(int i =0;i<core.length;i++) {
+			for(int j =0; j<core.length;j++) {
+				core[i][j]=1;
+			}
+		}
+		h_core = new float[]{
+				-1, 0, 0, 0, 1,
+	 			 1, 0, 0, 0,-1,
+	  			-1, 0, 0, 0, 1,
+	  			 1, 0, 0, 0,-1,
+	  			-1, 0, 0, 0, 1
+	  			};
+
+		v_core = new float[] {
+				-1, 1,-1, 1,-1,
+ 			    0 ,0 , 0, 0, 0,
+ 			    0 ,0 , 0, 0, 0,
+ 			    0 ,0 , 0, 0, 0,
+ 			    1 ,-1, 1,-1, 1
+ 			    };
+		
+		
+		
+		
 	}
 	//rotate
 	public BufferedImage Rotate( BufferedImage img )
@@ -140,12 +172,15 @@ public class ProcessImage {
 		
 	}
 
-//	public static BufferedImage MakeGussianWhiteNoise(double variance, int length, int width ){
-//		
-//		return null;
-//	}
-	
-	
+	public BufferedImage copy(BufferedImage img_) {
+    	BufferedImage img = new BufferedImage(img_.getWidth(),img_.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
+    	for(int i =0;i<img.getWidth();i++) {
+    		for(int j =0;j<img.getHeight();j++) {
+    			img.setRGB(i, j, img_.getRGB(i, j));
+    		}	
+    	}
+    	return img;
+	}
 	public BufferedImage FixImageSize(BufferedImage ori) {		
 		
 		int exportWidth = (ori.getWidth()%2==1?ori.getWidth():ori.getWidth()-1) ;
@@ -158,53 +193,9 @@ public class ProcessImage {
 		
 		return fixed ;
 	}
-//	public BufferedImage getPureNoise(BufferedImage img,BufferedImage noised_imag) {
-//		
-//		BufferedImage pure_noise =new BufferedImage(noised_imag.getWidth(), noised_imag.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
-//		for(int i =0;i<pure_noise.getWidth();i++) {
-//			for(int j =0;j<pure_noise.getHeight();j++) {
-//				
-//				
-//				
-//				
-//				
-//				
-//                int color = noised_imag.getRGB(i, j);
-//                int color2 =img.getRGB(i, j);
-//                int gray1,gray2;
-//                int r = (color >> 16) & 0xff ;
-//                int g = (color >> 8) & 0xff ;
-//                int b = color & 0xff ;
-//                gray1 = ( int ) (0.3 * r + 0.59 * g + 0.11 * b);
-//		        Color c = new Color(gray1, gray1, gray1);
-//		        gray1 = c.getRGB();		
-//		        
-//		        r = (color2 >> 16) & 0xff ;
-//                g = (color2 >> 8) & 0xff ;
-//                b = color2 & 0xff ;
-//                gray2 = ( int ) (0.3 * r + 0.59 * g + 0.11 * b);
-//		        c = new Color(gray2, gray2, gray2);
-//		        gray2 = c.getRGB();	
-//		        
-//		        
-//		        
-//
-//                
-//				pure_noise.setRGB(i,j,(gray1-gray2));
-//				
-//			}
-//			
-//		} 
-//			
-//		
-//		
-//		return pure_noise;
-//	}
+
 	public static int[] range(int n, double prob) {
 
-		
-//		prob = 1/prob;
-//		double res = ((100 * prob)/10);
 		double res = 200/prob;		
 		int[]array = new int[(int)res];
 		array[0]= 1;
@@ -218,8 +209,7 @@ public class ProcessImage {
 	    int result[] = new int[] {array[rnd],(n==array[rnd]?0:1)};
 	    return result;
 	}
-	
-	
+		
 	public BufferedImage[] AddPSNoise(BufferedImage img,double rate) {
 		int grayscale =256;
 		BufferedImage noised = RGBtoGray(FixImageSize(img));
@@ -340,10 +330,183 @@ public class ProcessImage {
 		BufferedImage[] result = new BufferedImage[] {noised,pure_noise};		
 		return result;
 	}
-	
-	
-	
-	
+		
+	public BufferedImage Smooth(BufferedImage img, int core_size) {
+			
+		// we want this to return
+		BufferedImage smooth_img = this.RGBtoGray(img);		
+		//for temp use. this gon be compliemted with 0 on the each edge of itself depend on the size of the core
+		BufferedImage pro_convo = new BufferedImage(smooth_img.getWidth()+core_size-1, smooth_img.getHeight()+core_size-1, BufferedImage.TYPE_BYTE_GRAY);
+		//process to make compliemted imgage
+
+		for(int i =0;i<pro_convo.getWidth();i++) {
+			for(int j =0;j<pro_convo.getHeight();j++) {
+				int zero =0;
+				Color c = new Color(zero,zero,zero);
+				//filled with 0s
+				if((i>=0&&i<core_size/2)||
+   				   (j>=0&&j<core_size/2)||
+				   (i<=pro_convo.getWidth()-1&&i>pro_convo.getWidth()-(core_size/2))||
+				   (j<=pro_convo.getHeight()-1&&j>pro_convo.getHeight()-(core_size/2))) {
+					pro_convo.setRGB(i, j, c.getRGB());
+					continue;
+				}		
+  				//fill the origin one
+				if((i>(core_size/2))&&
+						(j>(core_size/2))&&
+						(i<pro_convo.getWidth()-(core_size/2))&&
+						(j<pro_convo.getHeight()-(core_size/2))) {
+//					System.out.print("(wxh)="+i+"x"+j+" ");
+					pro_convo.setRGB(i, j, smooth_img.getRGB(i-(core_size/2), j-(core_size/2)));
+				}	
+//				System.out.println();
+			}
+		}
+//		
+//		for(int i =0;i<pro_convo.getWidth();i++) {
+//			for(int j =0;j<pro_convo.getHeight();j++) {
+//				System.out.print(pro_convo.getRGB(i, j));
+//			}
+//			System.out.println();
+//		} 
+//		System.out.println("(wxh)="+smooth_img.getWidth()+"x"+smooth_img.getHeight());
+//		System.out.println("(wxh)="+pro_convo.getWidth()+"x"+pro_convo.getHeight());
+		
+		
+		//make a kernel(core)
+
+		//the for loop is is scaning the origin -> gray
+		for(int i =0;i<smooth_img.getWidth();i++) {
+			for(int j =0;j<smooth_img.getHeight();j++) {
+				// for sum up
+				double r = 0;
+				//the for loop is scaning through core
+				for(int k =0;k<core.length;k++) {
+					for(int l =0;l<core.length;l++) {
+//						System.out.println("(i+k, j+l)="+i+" "+k+" "+j+" "+l);
+						int gray= pro_convo.getRGB(i+k, j+l)& 0xFF;
+						//average here cuz it's big enough not to be turned 0
+						r+=gray*core[k][l]/(core.length*core.length);							
+					}
+				}					
+				int rr = (int)r;
+//				if(rr>255||rr<0) {
+//					rr =128;
+//				}
+				Color c = new Color(rr,rr,rr);			
+				smooth_img.setRGB(i, j, c.getRGB());
+			}
+		}	
+		return smooth_img;
+	}
+	public BufferedImage EdgeDetection(BufferedImage img, int core_size) {
+		BufferedImage smooth_img = this.RGBtoGray(img);		
+		//for temp use. this gon be compliemted with 0 on the each edge of itself depend on the size of the core
+		BufferedImage pro_convo = new BufferedImage(img.getWidth()+2*((int)(core_size/2)), img.getHeight()+2*((int)(core_size/2)), BufferedImage.TYPE_BYTE_GRAY);
+		//process to make compliemted imgage
+		int zero =0;
+		for(int i =0;i<pro_convo.getWidth();i++) {
+			for(int j =0;j<pro_convo.getHeight();j++) {
+				//filled with 0s
+				if(i>=0&&i<core_size/2) {
+					Color c = new Color(zero,zero,zero);
+					pro_convo.setRGB(i, j, c.getRGB());
+					continue;
+				}
+				if(j>=0&&j<core_size/2) {
+					Color c = new Color(zero,zero,zero);
+					pro_convo.setRGB(i, j, c.getRGB());					
+					continue;
+				}
+				
+				if(i<=pro_convo.getWidth()-1&&i>pro_convo.getWidth()-(core_size/2)-1) {
+					Color c = new Color(zero,zero,zero);
+					pro_convo.setRGB(i, j, c.getRGB());
+					continue;
+				}
+				if(j<=pro_convo.getHeight()-1&&j>pro_convo.getHeight()-(core_size/2)-1) {
+					Color c = new Color(zero,zero,zero);
+					pro_convo.setRGB(i, j, c.getRGB());					
+					continue;
+				}
+  				//fill the origin one
+				if(i>=(core_size/2)&&j>=(core_size/2)) {
+					pro_convo.setRGB(i, j, smooth_img.getRGB(i-(core_size/2), j-(core_size/2)));
+				}				
+			}
+		}
+
+		//the for loop is is scaning the origin -> gray
+		for(int i =1;i<smooth_img.getWidth();i++) {
+			for(int j =1;j<smooth_img.getHeight();j++) {
+				// for sum up
+				double r = 0;
+				//the for loop is scaning through core
+				for(int k =0;k<core.length;k++) {
+					for(int l =0;l<core.length;l++) {
+						int gray= pro_convo.getRGB(i+k, j+l)& 0xFF;
+						//average here cuz it's big enough not to be turned 0
+						r+=gray*core[k][l]/(core.length*core.length);							
+					}
+				}					
+				int rr = (int)r;
+				if(rr>255||rr<0) {
+					rr =128;
+				}
+				Color c = new Color(rr,rr,rr);			
+				smooth_img.setRGB(i, j, c.getRGB());
+			}
+		}	
+		return smooth_img;
+	}
+	//try to program in java package
+    public BufferedImage detect(BufferedImage img_)
+    {
+    	BufferedImage img = copy(img_);
+    	BufferedImage Gx, Gy;
+
+    	int kernel_h_size =(int)Math.sqrt(h_core.length);
+    	int kernel_v_size =(int)Math.sqrt(v_core.length);
+        Kernel MatrixA = new Kernel(kernel_h_size, kernel_h_size, h_core);
+        Kernel MatrixB = new Kernel(kernel_v_size, kernel_v_size, v_core);
+        // Convolving the matrices. I hate math.
+        ConvolveOp convolve1 = new ConvolveOp(MatrixA);
+        ConvolveOp convolve2 = new ConvolveOp(MatrixB);
+        
+        Gx = convolve1.filter(img, null);
+        Gy = convolve2.filter(img, null);
+         
+
+         for (int i=0; i<img.getWidth(); i++) {
+            for (int j=0; j<img.getHeight(); j++) {
+                double result=0;
+	       	     int derp = Gx.getRGB(i,j);
+	    	     int herp = Gy.getRGB(i,j);
+	    	     result = Math.sqrt(Math.pow(derp, 2.0) + Math.pow(herp, 2.0));
+                if(result < 20726564.99) {
+                	int www= 0;
+                    img.setRGB(i,j,new Color(www,www,www).getRGB());
+                } else {
+                	int bbb = 255;
+                    img.setRGB(i,j,new Color(bbb,bbb,bbb).getRGB());
+                }
+            }
+         }
+       return img;
+    }
+    public void setCore(int core_size) {
+		core = new double[core_size][core_size];
+		//fill with 1, not gon /(core_size*core_size) because it gon tend to turn 0. thus, we will make it average later
+		for(int i =0;i<core.length;i++) {
+			for(int j =0; j<core.length;j++) {
+				core[i][j]=1;
+			}
+		}
+    }
+    public int getCore() {
+		return core.length;
+    }
+
 	
 
 }

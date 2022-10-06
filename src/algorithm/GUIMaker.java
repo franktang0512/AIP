@@ -70,6 +70,10 @@ public class GUIMaker {
                     	   HW3withHW1();
                     	   
                        }
+                       if(hw.equals("hw4")) {
+                    	   HW4withHW1();
+                    	   
+                       }
                        
                        
                    }
@@ -92,6 +96,8 @@ public class GUIMaker {
 		JFrame frame = new JFrame("AIP61047115S");
 
 		JOptionPane.showMessageDialog(frame, "Image formate: ."+imagefile.getFileType(imagefile.filepath)+"\nImage size:"+imagefile.getWidth()+"x"+imagefile.getHeight());
+		
+		
 		JPanel panel = new JPanel(new GridLayout(2,3));
 //		BufferedImage image  = ImageIO.read(new File(filepath));
 
@@ -664,4 +670,399 @@ public class GUIMaker {
 		
 	}
 	
+	public void HW4withHW1() {
+		
+		JFrame frame = new JFrame("AIP61047115S");
+
+		JOptionPane.showMessageDialog(frame, "Image formate: ."+imagefile.getFileType(imagefile.filepath)+"\nImage size:"+imagefile.getWidth()+"x"+imagefile.getHeight());
+		JPanel panel = new JPanel(new GridLayout(2,3));
+//		BufferedImage image  = ImageIO.read(new File(filepath));
+
+	    JLabel label = new JLabel(new ImageIcon(imagefile.getBufferImage()));
+	    JLabel label1 = new JLabel();
+	    
+	    JLabel label2 = new JLabel(/*new ImageIcon(rotateCw(image))*/);
+	    panel.add(label);
+	    panel.add(label1);
+	    panel.add(label2);
+	    
+	    
+	    
+		Button load = new Button("load");
+		load.setPreferredSize(new Dimension(40, 40));
+		
+		JPanel panel_function = new JPanel(new GridLayout(6,1));
+		
+		
+		Button convert = new Button("convert");
+		convert.setPreferredSize(new Dimension(40, 40));
+
+		JPanel panel_color = new JPanel(new GridLayout(1,4));
+		Button gray = new Button("turn gray");
+		
+		Button red = new Button("turn red");
+
+		Button green = new Button("turn green");
+
+		Button blue = new Button("turn blue");
+		panel_color.add(gray);
+		panel_color.add(red);
+		panel_color.add(green);
+		panel_color.add(blue);
+		
+		Button histogram = new Button("histogram");	
+		
+		panel_function.add(convert);
+		
+		panel_function.add(panel_color);
+		panel_function.add(histogram);
+		
+		JPanel panel_noise = new JPanel(new GridLayout(1,2));
+		Button GaussianNoise = new Button("Gaussian Noise");
+		Button PepperSaltNoise = new Button("Pepper-Salt Noise");
+		panel_noise.add(GaussianNoise);
+		panel_noise.add(PepperSaltNoise);
+		panel_function.add(panel_noise);
+		
+		
+		
+		
+		JPanel panel_hw4 = new JPanel(new GridLayout(1,2));
+		Button smoothing = new Button("Smoothing");
+		Button Edge_detection = new Button("Edge detection");
+
+		panel_hw4.add(smoothing);
+		panel_hw4.add(Edge_detection);
+		
+		
+		
+		JPanel panel_mask = new JPanel(new GridLayout(1,2));
+		Button setsmoothMask = new Button("Set Smooth Mask");
+		Button setedgeMask = new Button("Set Edge Mask");
+		panel_mask.add(setsmoothMask);
+		panel_mask.add(setedgeMask);
+		
+		
+		
+		panel_function.add(panel_mask);
+		panel_function.add(panel_hw4);
+		
+		Button save = new Button("save");
+		save.setPreferredSize(new Dimension(40, 40));
+		
+	    panel.add(load);
+	    
+	    load.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	try {
+	        		imagefile.clear();
+	        		SelecFiletWindow("hw4");
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+	        	frame.dispose();	        	
+	        }
+	        
+	    });
+	    
+	    convert.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+	        	if(imagefile.getProcessedImage()==null) {
+	        		imagefile.setProcessedImage(prcessimage.Rotate(imagefile.getBufferImage()));
+	        		
+	        	}else {
+	        		imagefile.setProcessedImage(prcessimage.Rotate(imagefile.getProcessedImage()));
+	        	}
+
+	        	label2.setIcon(new ImageIcon(imagefile.getProcessedImage()));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	        
+	        
+	    });
+	    gray.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoGray(imagefile.getBufferImage())));
+	        	imagefile.smoothed =prcessimage.RGBtoGray(imagefile.getBufferImage());
+	        	imagefile.smoothed = null;
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    red.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoR(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    green.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoG(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    blue.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoB(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    
+	    histogram.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	
+	        	makeBrightnessIntensityHistogram();
+	        }	        
+	    });
+	    
+	    GaussianNoise.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	
+//	        	makeGaussianNoiseHistogram();
+	        	makeNoiseSettingGUI("Gaussian");
+	        }	        
+	    });
+	    PepperSaltNoise.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	
+//	        	makeGaussianNoiseHistogram();
+	        	makeNoiseSettingGUI("Pepper");
+	        }	        
+	    });
+	    
+	    
+	    save.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	        		
+	        	try {
+	        		imagefile.save();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}	        	
+	        }	        
+	    });
+	    
+		smoothing.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	
+
+	        	
+	        	if(imagefile.getSmooth()==null) {
+	        		imagefile.setSmooth(prcessimage.Smooth(imagefile.getBufferImage(),prcessimage.getCore()));
+        		
+	        	}else {
+	        		imagefile.setSmooth(prcessimage.Smooth(imagefile.getSmooth(),prcessimage.getCore()));
+	        	}
+	//        	label1.setIcon(new ImageIcon(prcessimage.aaa(imagefile.getBufferImage())));
+	        	label1.setIcon(new ImageIcon(imagefile.getSmooth()));
+	        	frame.repaint();		
+		        }	        
+	    });
+		Edge_detection.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	if(imagefile.getSmooth()!=null) {
+	        		imagefile.setEdge(prcessimage.detect(imagefile.getSmooth()));
+	        		
+	        	}else {
+	        		imagefile.setEdge(prcessimage.detect(imagefile.getBufferImage()));
+	        		
+	        	}
+//
+	        	label2.setIcon(new ImageIcon(imagefile.getEdge()));
+	        	frame.repaint();	
+	        }	        
+	    });
+		setsmoothMask.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	setSmoothMaskSize();	
+	        }	        
+	    });
+		setedgeMask.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	if(imagefile.getSmooth()!=null) {
+	        		imagefile.setEdge(prcessimage.detect(imagefile.getSmooth()));
+	        		
+	        	}else {
+	        		imagefile.setEdge(prcessimage.detect(imagefile.getBufferImage()));
+	        		
+	        	}
+//
+	        	label2.setIcon(new ImageIcon(imagefile.getEdge()));
+	        	frame.repaint();	
+	        }	        
+	    });
+//		setMask.addActionListener(new ActionListener(){
+//	        @Override
+//	        public void actionPerformed(ActionEvent e) {
+//	        	setMaskSize();	
+//	        }	        
+//	    });
+//	    
+	    panel.add(panel_function);
+	    panel.add(save);
+	    
+	    frame.getContentPane().add(panel); 
+	    frame.setPreferredSize(new Dimension(1000, 800));
+	    frame.pack();
+	    frame.setVisible(true);	    
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		
+	}
+	public void setSmoothMaskSize() {
+
+		JFrame frame = new JFrame("Set Mask size");
+//	    frame.getContentPane().add(panel); 
+		
+		JPanel panel = new JPanel(new FlowLayout());
+		double sd=0;
+		
+		JLabel settext = new JLabel("Please set mask size:"); 
+		
+		JTextField sdtext = new JTextField(15);
+		Button check = new Button("set");
+		
+		check.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	        	
+	        	try {
+	        		double d = Double.parseDouble(sdtext.getText().toString());		        	
+		        	if((int)d%2==0||d<0) {
+		        		JOptionPane.showMessageDialog(frame, "Please set a positive odd integer");
+		        	}else {
+		        		prcessimage.setCore((int)d);
+		        		frame.dispose();
+		        	}
+	        				    		
+	        	}catch(Exception eee) {
+	        		JOptionPane.showMessageDialog(frame, "R u idiot?\n type in numeric instead thanks");
+	        	}
+	        	        	
+	        }	        
+	    });
+		panel.add(settext);
+		panel.add(sdtext);
+		panel.add(check);
+		frame.add(panel);
+	    frame.setPreferredSize(new Dimension(350, 100));
+	    frame.pack();
+	    frame.setVisible(true);	  
+	    frame.setLocationRelativeTo(null);
+	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+	}
+	
+	
+	
+//	public void SmoothandEdge() {
+//		JFrame frame = new JFrame("AIP61047115S");
+//		BufferedImage gray = prcessimage.RGBtoGray(imagefile.getBufferImage());
+//		BufferedImage smooth = prcessimage.RGBtoGray(imagefile.getBufferImage());
+////		JOptionPane.showMessageDialog(frame, "Image formate: ."+imagefile.getFileType(imagefile.filepath)+"\nImage size:"+imagefile.getWidth()+"x"+imagefile.getHeight());
+//		JPanel panel = new JPanel(new GridLayout(2,2));
+////		BufferedImage image  = ImageIO.read(new File(filepath));
+//
+//	    JLabel label = new JLabel(new ImageIcon(gray));
+//	    JLabel label1 = new JLabel();
+//	    
+//
+//	    panel.add(label);
+//	    panel.add(label1);
+//
+//	    
+//	    
+//	    
+//		Button smooth_btn = new Button("smooth");
+//		smooth_btn.setPreferredSize(new Dimension(40, 40));
+//		Button edge_btn = new Button("edge");
+//		edge_btn.setPreferredSize(new Dimension(40, 40));
+//		
+//	    panel.add(smooth_btn);
+//	    
+//	    smooth_btn.addActionListener(new ActionListener(){
+//	    	BufferedImage ssmm= null;
+//	    	
+//	    	
+//	        @Override
+//	        public void actionPerformed(ActionEvent e) {
+//	        	try {
+//	        		
+//	        		
+////		        	if(imagefile.getSmooth()==null) {
+////		        		imagefile.setSmooth(prcessimage.Smooth(imagefile.getBufferImage(),5));
+////		        		
+////		        	}else {
+////		        		imagefile.setSmooth(prcessimage.Smooth(imagefile.getBufferImage(),3));
+////		        	}
+//		        	label1.setIcon(new ImageIcon(prcessimage.aaa(imagefile.getBufferImage())));
+////		        	label1.setIcon(new ImageIcon(imagefile.getSmooth()));
+//		        	frame.repaint();	
+//	        		
+//	        		
+//
+//	        		
+//	        		
+////	        		label1.setIcon(new ImageIcon(smooth));
+//	        		frame.repaint();	
+//				} catch (Exception e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//	        	frame.dispose();	        	
+//	        }
+//	        
+//
+//	        
+//	    });
+//	    
+////	    edge_btn.addActionListener(new ActionListener(){
+////	        @Override
+////	        public void actionPerformed(ActionEvent e) {	 
+////	        	if(imagefile.getProcessedImage()==null) {
+////	        		imagefile.setProcessedImage(prcessimage.Rotate(imagefile.getBufferImage()));
+////	        	}else {
+////	        		imagefile.setProcessedImage(prcessimage.Rotate(imagefile.getProcessedImage()));
+////	        	}
+////	        	label2.setIcon(new ImageIcon(imagefile.getProcessedImage()));
+////	        	frame.repaint();	        	
+////	        }
+////	        
+////	    });
+//
+//	    
+//	    panel.add(edge_btn);
+//
+//	    
+//	    frame.getContentPane().add(panel); 
+//	    frame.setPreferredSize(new Dimension(1000, 800));
+//	    frame.pack();
+//	    frame.setVisible(true);	    
+//	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+//	    
+//	}
+//	
 }
