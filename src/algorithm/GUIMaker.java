@@ -99,12 +99,11 @@ public class GUIMaker {
 		
 		
 		JPanel panel = new JPanel(new GridLayout(2,3));
-//		BufferedImage image  = ImageIO.read(new File(filepath));
 
 	    JLabel label = new JLabel(new ImageIcon(imagefile.getBufferImage()));
 	    JLabel label1 = new JLabel("                                    ➔➔➔➔➔➔➔➔");
 	    
-	    JLabel label2 = new JLabel(/*new ImageIcon(rotateCw(image))*/);
+	    JLabel label2 = new JLabel();
 	    panel.add(label);
 	    panel.add(label1);
 	    panel.add(label2);
@@ -759,7 +758,7 @@ public class GUIMaker {
 	        		imagefile.clear();
 	        		SelecFiletWindow("hw4");
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
+
 					e1.printStackTrace();
 				}
 	        	frame.dispose();	        	
@@ -903,16 +902,7 @@ public class GUIMaker {
 		setedgeMask.addActionListener(new ActionListener(){
 	        @Override
 	        public void actionPerformed(ActionEvent e) {
-	        	if(imagefile.getSmooth()!=null) {
-	        		imagefile.setEdge(prcessimage.detect(imagefile.getSmooth()));
-	        		
-	        	}else {
-	        		imagefile.setEdge(prcessimage.detect(imagefile.getBufferImage()));
-	        		
-	        	}
-//
-	        	label2.setIcon(new ImageIcon(imagefile.getEdge()));
-	        	frame.repaint();	
+	        	setEdgeMask();	
 	        }	        
 	    });
 //		setMask.addActionListener(new ActionListener(){
@@ -954,7 +944,7 @@ public class GUIMaker {
 		        	if((int)d%2==0||d<0) {
 		        		JOptionPane.showMessageDialog(frame, "Please set a positive odd integer");
 		        	}else {
-		        		prcessimage.setCore((int)d);
+//		        		prcessimage.setCore((int)d);
 		        		frame.dispose();
 		        	}
 	        				    		
@@ -977,92 +967,144 @@ public class GUIMaker {
 	}
 	
 	
-	
-//	public void SmoothandEdge() {
-//		JFrame frame = new JFrame("AIP61047115S");
-//		BufferedImage gray = prcessimage.RGBtoGray(imagefile.getBufferImage());
-//		BufferedImage smooth = prcessimage.RGBtoGray(imagefile.getBufferImage());
-////		JOptionPane.showMessageDialog(frame, "Image formate: ."+imagefile.getFileType(imagefile.filepath)+"\nImage size:"+imagefile.getWidth()+"x"+imagefile.getHeight());
-//		JPanel panel = new JPanel(new GridLayout(2,2));
-////		BufferedImage image  = ImageIO.read(new File(filepath));
-//
-//	    JLabel label = new JLabel(new ImageIcon(gray));
-//	    JLabel label1 = new JLabel();
-//	    
-//
-//	    panel.add(label);
-//	    panel.add(label1);
-//
-//	    
-//	    
-//	    
-//		Button smooth_btn = new Button("smooth");
-//		smooth_btn.setPreferredSize(new Dimension(40, 40));
-//		Button edge_btn = new Button("edge");
-//		edge_btn.setPreferredSize(new Dimension(40, 40));
-//		
-//	    panel.add(smooth_btn);
-//	    
-//	    smooth_btn.addActionListener(new ActionListener(){
-//	    	BufferedImage ssmm= null;
-//	    	
-//	    	
-//	        @Override
-//	        public void actionPerformed(ActionEvent e) {
-//	        	try {
-//	        		
-//	        		
-////		        	if(imagefile.getSmooth()==null) {
-////		        		imagefile.setSmooth(prcessimage.Smooth(imagefile.getBufferImage(),5));
-////		        		
-////		        	}else {
-////		        		imagefile.setSmooth(prcessimage.Smooth(imagefile.getBufferImage(),3));
-////		        	}
-//		        	label1.setIcon(new ImageIcon(prcessimage.aaa(imagefile.getBufferImage())));
-////		        	label1.setIcon(new ImageIcon(imagefile.getSmooth()));
-//		        	frame.repaint();	
-//	        		
-//	        		
-//
-//	        		
-//	        		
-////	        		label1.setIcon(new ImageIcon(smooth));
-//	        		frame.repaint();	
-//				} catch (Exception e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//	        	frame.dispose();	        	
-//	        }
-//	        
-//
-//	        
-//	    });
-//	    
-////	    edge_btn.addActionListener(new ActionListener(){
-////	        @Override
-////	        public void actionPerformed(ActionEvent e) {	 
-////	        	if(imagefile.getProcessedImage()==null) {
-////	        		imagefile.setProcessedImage(prcessimage.Rotate(imagefile.getBufferImage()));
-////	        	}else {
-////	        		imagefile.setProcessedImage(prcessimage.Rotate(imagefile.getProcessedImage()));
-////	        	}
-////	        	label2.setIcon(new ImageIcon(imagefile.getProcessedImage()));
-////	        	frame.repaint();	        	
-////	        }
-////	        
-////	    });
-//
-//	    
-//	    panel.add(edge_btn);
-//
-//	    
+	public void setEdgeMask() {
+
+		JFrame frame = new JFrame("Set Mask size");
 //	    frame.getContentPane().add(panel); 
-//	    frame.setPreferredSize(new Dimension(1000, 800));
-//	    frame.pack();
-//	    frame.setVisible(true);	    
-//	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-//	    
-//	}
-//	
+		
+		JPanel panel = new JPanel(new FlowLayout());
+		double sd=0;
+		
+		JLabel settext = new JLabel("Please set mask size:"); 
+		
+		JTextField sdtext = new JTextField(15);
+		Button check = new Button("set");
+		
+		check.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	        	
+	        	try {
+	        		double d = Double.parseDouble(sdtext.getText().toString());		        	
+		        	if((int)d%2==0||d<0) {
+		        		JOptionPane.showMessageDialog(frame, "Please set a positive odd integer");
+		        	}else {
+		        		MatrixForm((int)d);
+		        		frame.dispose();
+		        	}
+	        				    		
+	        	}catch(Exception eee) {
+	        		JOptionPane.showMessageDialog(frame, "R u idiot?\n type in numeric instead thanks");
+	        	}
+	        	        	
+	        }	        
+	    });
+		panel.add(settext);
+		panel.add(sdtext);
+		panel.add(check);
+		frame.add(panel);
+	    frame.setPreferredSize(new Dimension(350, 100));
+	    frame.pack();
+	    frame.setVisible(true);	  
+	    frame.setLocationRelativeTo(null);
+	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+	}
+	public void MatrixForm(int matrixsize) {
+		JFrame frame = new JFrame("Set Mask Elements");
+		JPanel panel_all = new JPanel(new GridLayout(2,1));
+		JPanel panel = new JPanel(new GridLayout(matrixsize,matrixsize));
+		
+		JTextField []matrix_elementss= new JTextField[matrixsize*matrixsize];
+		float [] masksetted= new float[matrixsize*matrixsize];
+		for(int i =0;i<matrix_elementss.length;i++) {
+			matrix_elementss[i] = new JTextField();
+			panel.add(matrix_elementss[i]);
+		}
+		
+		JPanel panel1 = new JPanel();
+		Button mask1 = new Button("set mask 1");
+		Button mask2 = new Button("set mask 2");
+		Button mask3 = new Button("set smooth mask");
+		
+		panel1.add(mask1);
+		panel1.add(mask2);
+		panel1.add(mask3);
+		
+		
+		mask1.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	        	
+	        	try {
+	        		int x=0;
+	        		for(JTextField i :matrix_elementss) {
+	        			double d = Double.parseDouble(i.getText().toString());
+	        			masksetted[x] = (float)d;
+	        			x++;
+	        		}
+	        		prcessimage.setHCore(masksetted);
+	        				    		
+	        	}catch(Exception eee) {
+	        		JOptionPane.showMessageDialog(frame, "R u idiot?\n type in numeric instead thanks");
+	        	}
+	        	        	
+	        }	        
+	    });
+		
+		mask2.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	        	
+	        	try {
+	        		int x=0;
+	        		for(JTextField i :matrix_elementss) {
+	        			double d = Double.parseDouble(i.getText().toString());
+	        			masksetted[x] = (float)d;
+	        			x++;
+	        		}
+	        		prcessimage.setHCore(masksetted);
+	        				    		
+	        	}catch(Exception eee) {
+	        		JOptionPane.showMessageDialog(frame, "R u idiot?\n type in numeric instead thanks");
+	        	}
+	        	        	
+	        }	        
+	    });
+		mask3.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	        	
+	        	try {
+	        		
+	        		
+	        		int size =(int) Math.sqrt(matrix_elementss.length);
+	        		double [][]smoothmask = new double [size][size];
+	        		int x=0;
+	        		for(int i =0;i<size;i++) {
+	        			for(int j =0;j<size;j++) {
+	        				double d = Double.parseDouble(matrix_elementss[x].getText().toString());
+	        				smoothmask[i][j] = d;
+		        			x++;
+		        		}	
+	        			
+	        		}
+	        		
+
+	        		prcessimage.setCore(smoothmask);
+	        				    		
+	        	}catch(Exception eee) {
+	        		JOptionPane.showMessageDialog(frame, "R u idiot?\n type in numeric instead thanks");
+	        	}
+	        	        	
+	        }	        
+	    });		
+
+		panel_all.add(panel);
+		panel_all.add(panel1);
+		frame.add(panel_all);
+	    frame.setPreferredSize(new Dimension(500, 500));
+	    frame.pack();
+	    frame.setVisible(true);	  
+	    frame.setLocationRelativeTo(null);
+	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+	}	
+	
 }

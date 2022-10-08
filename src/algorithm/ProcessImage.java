@@ -393,13 +393,19 @@ public class ProcessImage {
 //				if(rr>255||rr<0) {
 //					rr =128;
 //				}
+				if(rr<0) {
+					rr=0;
+				}
+				if(rr>255){
+					rr=255;
+				}
 				Color c = new Color(rr,rr,rr);			
 				smooth_img.setRGB(i, j, c.getRGB());
 			}
 		}	
 		return smooth_img;
 	}
-	public BufferedImage EdgeDetection(BufferedImage img, int core_size) {
+	public BufferedImage detect_manual(BufferedImage img, int core_size) {
 		BufferedImage smooth_img = this.RGBtoGray(img);		
 		//for temp use. this gon be compliemted with 0 on the each edge of itself depend on the size of the core
 		BufferedImage pro_convo = new BufferedImage(img.getWidth()+2*((int)(core_size/2)), img.getHeight()+2*((int)(core_size/2)), BufferedImage.TYPE_BYTE_GRAY);
@@ -494,18 +500,34 @@ public class ProcessImage {
          }
        return img;
     }
-    public void setCore(int core_size) {
-		core = new double[core_size][core_size];
-		//fill with 1, not gon /(core_size*core_size) because it gon tend to turn 0. thus, we will make it average later
-		for(int i =0;i<core.length;i++) {
-			for(int j =0; j<core.length;j++) {
-				core[i][j]=1;
-			}
-		}
+    public void setCore(double[][] coreseted) {
+    	
+    	
+    	core =coreseted;
+//		core = new double[core_size][core_size];
+//		//fill with 1, not gon /(core_size*core_size) because it gon tend to turn 0. thus, we will make it average later
+//		for(int i =0;i<core.length;i++) {
+//			for(int j =0; j<core.length;j++) {
+//				core[i][j]=1;
+//			}
+//		}
     }
     public int getCore() {
 		return core.length;
     }
+    
+    public void setHCore(float [] hcore) {
+		h_core = hcore;
+    }
+    public void setVCore(float [] vcore) {
+		v_core = vcore;
+    }
+//    public int getHCore() {
+//		return this.h_core;
+//    }
+    
+    
+    
 
 	
 
