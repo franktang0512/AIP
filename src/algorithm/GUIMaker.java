@@ -74,6 +74,10 @@ public class GUIMaker {
                     	   HW4withHW1();
                     	   
                        }
+                       if(hw.equals("hw5")) {
+                    	   HW5withHW1();
+                    	   
+                       }
                        
                        
                    }
@@ -923,6 +927,324 @@ public class GUIMaker {
 		
 		
 	}
+	public void makeEquHistogram() {
+		Histogram h = new Histogram();
+		imagefile.getBufferImage();
+		
+        JFrame f = new JFrame("Equalized Histogram");
+
+        JPanel histogram_panel = new JPanel(new GridLayout(1, 2));
+        JPanel control_panel = new JPanel(new GridLayout(0, 1));
+        histogram_panel.add(h.createChart(imagefile.getBufferImage(),255));
+        histogram_panel.add(h.createChart(imagefile.getEqu(),255));
+//        control_panel.add(h.createControlPanel());
+        
+        f.add(histogram_panel);
+//        f.add(control_panel, BorderLayout.SOUTH);
+        f.setPreferredSize(new Dimension(1300, 400));
+        f.pack();
+        f.setLocationRelativeTo(null);
+        f.setVisible(true);	
+		
+	}
+	public void HW5withHW1() {
+		
+		JFrame frame = new JFrame("AIP61047115S");
+
+		JOptionPane.showMessageDialog(frame, "Image formate: ."+imagefile.getFileType(imagefile.filepath)+"\nImage size:"+imagefile.getWidth()+"x"+imagefile.getHeight());
+		JPanel panel = new JPanel(new GridLayout(2,3));
+//		BufferedImage image  = ImageIO.read(new File(filepath));
+
+	    JLabel label = new JLabel(new ImageIcon(imagefile.getBufferImage()));
+	    JLabel label1 = new JLabel();
+	    
+	    JLabel label2 = new JLabel(/*new ImageIcon(rotateCw(image))*/);
+	    panel.add(label);
+	    panel.add(label1);
+	    panel.add(label2);
+	    
+	    
+	    
+		Button load = new Button("load");
+		load.setPreferredSize(new Dimension(40, 40));
+		
+		JPanel panel_function = new JPanel(new GridLayout(7,1));
+		
+		
+		Button convert = new Button("convert");
+		convert.setPreferredSize(new Dimension(40, 40));
+
+		JPanel panel_color = new JPanel(new GridLayout(1,4));
+		Button gray = new Button("turn gray");
+		
+		Button red = new Button("turn red");
+
+		Button green = new Button("turn green");
+
+		Button blue = new Button("turn blue");
+		panel_color.add(gray);
+		panel_color.add(red);
+		panel_color.add(green);
+		panel_color.add(blue);
+		
+		Button histogram = new Button("histogram");	
+		
+		panel_function.add(convert);
+		
+		panel_function.add(panel_color);
+		panel_function.add(histogram);
+		
+		JPanel panel_noise = new JPanel(new GridLayout(1,2));
+		Button GaussianNoise = new Button("Gaussian Noise");
+		Button PepperSaltNoise = new Button("Pepper-Salt Noise");
+		panel_noise.add(GaussianNoise);
+		panel_noise.add(PepperSaltNoise);
+		panel_function.add(panel_noise);
+		
+		
+		
+		
+		JPanel panel_hw4 = new JPanel(new GridLayout(1,2));
+		Button smoothing = new Button("Smoothing");
+		Button Edge_detection = new Button("Edge detection");
+
+		panel_hw4.add(smoothing);
+		panel_hw4.add(Edge_detection);
+		
+		
+		
+		JPanel panel_hw5 = new JPanel(new GridLayout(1,2));
+		Button equ = new Button("Equalization");
+		Button histogram_equ = new Button("histogram_equ");
+		panel_hw5.add(equ);
+		panel_hw5.add(histogram_equ);
+		
+		
+		
+		
+		JPanel panel_mask = new JPanel(new GridLayout(1,2));
+		Button setsmoothMask = new Button("Set Smooth Mask");
+		Button setedgeMask = new Button("Set Edge Mask");
+		panel_mask.add(setsmoothMask);
+		panel_mask.add(setedgeMask);
+		
+		
+		
+		panel_function.add(panel_mask);
+		panel_function.add(panel_hw4);
+		
+		panel_function.add(panel_hw5);
+		
+		Button save = new Button("save");
+		save.setPreferredSize(new Dimension(40, 40));
+		
+	    panel.add(load);
+	    
+	    load.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	try {
+	        		imagefile.clear();
+	        		
+	        		SelecFiletWindow("hw5");
+				} catch (Exception e1) {
+
+					e1.printStackTrace();
+				}
+	        	frame.dispose();	        	
+	        }
+	        
+	    });
+	    
+	    convert.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+	        	if(imagefile.getProcessedImage()==null) {
+	        		imagefile.setProcessedImage(prcessimage.Rotate(imagefile.getBufferImage()));
+	        		
+	        	}else {
+	        		imagefile.setProcessedImage(prcessimage.Rotate(imagefile.getProcessedImage()));
+	        	}
+
+	        	label2.setIcon(new ImageIcon(imagefile.getProcessedImage()));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	        
+	        
+	    });
+	    gray.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoGray(imagefile.getBufferImage())));
+	        	imagefile.smoothed =prcessimage.RGBtoGray(imagefile.getBufferImage());
+	        	imagefile.smoothed = null;
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    red.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoR(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    green.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoG(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    blue.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	 
+
+	        	label1.setIcon(new ImageIcon(prcessimage.RGBtoB(imagefile.getBufferImage())));
+	        	frame.repaint();	        	
+	        }
+	        
+	        
+	    });
+	    
+	    histogram.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	
+	        	makeBrightnessIntensityHistogram();
+	        }	        
+	    });
+	    
+	    GaussianNoise.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	
+//	        	makeGaussianNoiseHistogram();
+	        	makeNoiseSettingGUI("Gaussian");
+	        }	        
+	    });
+	    PepperSaltNoise.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	
+//	        	makeGaussianNoiseHistogram();
+	        	makeNoiseSettingGUI("Pepper");
+	        }	        
+	    });
+	    
+	    
+	    save.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	        		
+	        	try {
+	        		imagefile.save();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}	        	
+	        }	        
+	    });
+	    
+		smoothing.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	
+
+	        	
+	        	if(imagefile.getSmooth()==null) {
+	        		imagefile.setSmooth(prcessimage.Smooth(imagefile.getBufferImage(),prcessimage.getCore()));
+        		
+	        	}else {
+	        		imagefile.setSmooth(prcessimage.Smooth(imagefile.getSmooth(),prcessimage.getCore()));
+	        	}
+	//        	label1.setIcon(new ImageIcon(prcessimage.aaa(imagefile.getBufferImage())));
+	        	label1.setIcon(new ImageIcon(imagefile.getSmooth()));
+	        	frame.repaint();	
+	        	
+	        	
+	        	
+	        	
+		
+		        }	        
+	    });
+		Edge_detection.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	if(imagefile.getSmooth()!=null) {
+	        		imagefile.setEdge(prcessimage.detect(imagefile.getSmooth()));
+	        		
+	        	}else {
+	        		imagefile.setEdge(prcessimage.detect(imagefile.getBufferImage()));
+	        		
+	        	}
+//
+	        	label2.setIcon(new ImageIcon(imagefile.getEdge()));
+	        	frame.repaint();	
+	        }	        
+	    });
+		setsmoothMask.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	setSmoothMaskSize();	
+	        }	        
+	    });
+		setedgeMask.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	setEdgeMask();	
+	        }	        
+	    });
+		
+		
+		
+		equ.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	    		
+	        	if(imagefile.getEqu()==null) {
+	        		imagefile.setEqu(prcessimage.equalize(imagefile.getBufferImage()));
+	    		
+	        	}else {
+	        		imagefile.setEqu(prcessimage.equalize(imagefile.getEqu()));
+	        	}
+	        	label1.setIcon(new ImageIcon(imagefile.getEqu()));
+	        	frame.repaint();
+	        }	        
+	    });
+	    histogram_equ.addActionListener(new ActionListener(){
+	        @Override
+	        public void actionPerformed(ActionEvent e) {	
+
+	        	makeEquHistogram();
+	        }	        
+	    });
+//		setMask.addActionListener(new ActionListener(){
+//	        @Override
+//	        public void actionPerformed(ActionEvent e) {
+//	        	setMaskSize();	
+//	        }	        
+//	    });
+//	    
+	    panel.add(panel_function);
+	    panel.add(save);
+	    
+	    frame.getContentPane().add(panel); 
+	    frame.setPreferredSize(new Dimension(1000, 800));
+	    frame.pack();
+	    frame.setVisible(true);	    
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		
+	}
+	
+	
+	
 	public void setSmoothMaskSize() {
 
 		JFrame frame = new JFrame("Set Mask size");

@@ -16,6 +16,7 @@ public class ImageFile {
 	BufferedImage processed;
 	public BufferedImage smoothed;
 	public BufferedImage edged;
+	public BufferedImage equ;
 	public ImageFile() {}
 	
 
@@ -118,6 +119,7 @@ public class ImageFile {
 		 original=null;	
 		 processed=null;
 		 edged = null;
+		 equ = null;
 	}
 	
 	public BufferedImage getSmooth() {
@@ -131,6 +133,14 @@ public class ImageFile {
 	}
 	public void setEdge(BufferedImage img) {
 		edged = img;
+	}
+	
+	
+	public BufferedImage getEqu() {
+		return equ;
+	}
+	public void setEqu(BufferedImage img) {
+		equ = img;
 	}
 	
 }
